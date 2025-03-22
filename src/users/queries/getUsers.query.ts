@@ -13,4 +13,9 @@ export class GetUsersQuery extends CommonFiltersPaginated {
   @IsBoolean()
   @Transform(BooleanTransformer)
   isActive: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  @Transform(BooleanTransformer)
+  showDeleted: boolean;
 }

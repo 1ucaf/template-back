@@ -7,6 +7,7 @@ import { GetUsersQuery } from './queries/getUsers.query';
 import { Role } from 'src/auth/enums/role.enum';
 import { UserRoleDTO } from './dto/userRole.dto';
 import { PutUserDTO } from './dto/putUser.dto';
+import { AllPermissionsKeys, Permission, RegularUserPermissionsKeys } from 'src/permissions/dictionary/permissions.dictionary';
 
 interface IUserCreate {
   name: string;
@@ -24,8 +25,10 @@ export class UsersService {
     const {
       role,
       isActive,
+      showDeleted,
     } = query;
     const where: any = {};
+    if(!showDeleted) where.isDeleted = false;
     if (role) {
       if(role === Role.USER) where.roles = { $in: [Role.USER], $not: { $in: [Role.ADMIN] } };
       else where.roles = { $in: [role] };
@@ -66,11 +69,23 @@ export class UsersService {
     return await this.usersRepository.save(newUser);
   }
   activateUser(userId: string, body: UserRoleDTO) {
+    const permissions = body.roles.includes(Role.ADMIN) ? AllPermissionsKeys : RegularUserPermissionsKeys;
     return this.usersRepository.update(
       { id: userId },
       {
         isActive: true,
         roles: body.roles,
+        permissions,
+        isDeleted: false,
+      }
+    );
+  }
+  editUser(userId: string, body: PutUserDTO) {
+    return this.usersRepository.update(
+      { id: userId },
+      {
+        name: body.name,
+        email: body.email
       }
     );
   }
@@ -82,13 +97,22 @@ export class UsersService {
       }
     );
   }
-  editUser(userId: string, body: PutUserDTO) {
+  editUserPermissions(userId: string, permissions: Permission[]) {
     return this.usersRepository.update(
       { id: userId },
       {
-        roles: body.roles,
-        name: body.name,
-        email: body.email
+        permissions,
+      }
+    );
+  }
+  deleteUser(userId: string) {
+    return this.usersRepository.update(
+      { id: userId },
+      {
+        isActive: false,
+        roles: [],
+        permissions: [],
+        isDeleted: true,
       }
     );
   }

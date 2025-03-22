@@ -1,7 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
 import { BooksService } from './books.service';
 import { AuthGuard } from '@nestjs/passport';
-import { DeleteDTO } from './dto/deleteBook.dto';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Role } from 'src/auth/enums/role.enum';
 import { Roles } from 'src/auth/decorators/roles.decorator';
@@ -30,8 +29,8 @@ export class BooksController {
   updateBook(@Param("id") id, @Body() body) {
     return this.booksService.editBook(body, id);
   }
-  @Delete()
-  deleteBook(@Body() body: DeleteDTO) {
-    return this.booksService.deleteBookById(body.id);
+  @Delete(":id")
+  deleteBook(@Param("id") id) {
+    return this.booksService.deleteBookById(id);
   }
 }

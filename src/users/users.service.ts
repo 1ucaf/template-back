@@ -8,6 +8,7 @@ import { Role } from 'src/auth/enums/role.enum';
 import { UserRoleDTO } from './dto/userRole.dto';
 import { PutUserDTO } from './dto/putUser.dto';
 import { AllPermissionsKeys, Permission, RegularUserPermissionsKeys } from 'src/permissions/dictionary/permissions.dictionary';
+import { IsAdminDTO } from './dto/IsAdmin.dto';
 
 interface IUserCreate {
   name: string;
@@ -89,11 +90,12 @@ export class UsersService {
       }
     );
   }
-  makeAdmin(userId: string) {
+  setAdmin(userId: string, body: IsAdminDTO) {
+    const { isAdmin } = body;
     return this.usersRepository.update(
       { id: userId },
       {
-        roles: [Role.USER, Role.ADMIN],
+        roles: isAdmin ? [Role.USER, Role.ADMIN] : [Role.USER],
       }
     );
   }

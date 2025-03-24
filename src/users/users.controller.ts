@@ -10,6 +10,7 @@ import { UserRoleDTO } from './dto/userRole.dto';
 import { PutUserDTO } from './dto/putUser.dto';
 import { Permission } from 'src/permissions/dictionary/permissions.dictionary';
 import { PermissionsGuard } from 'src/auth/guards/permissions.guard';
+import { IsAdminDTO } from './dto/IsAdmin.dto';
 
 @Controller('users')
 @UseGuards(AuthGuard(), RolesGuard, PermissionsGuard)
@@ -30,10 +31,10 @@ export class UsersController {
   editUser(@Param('id') id: string, @Body() body: PutUserDTO) {
     return this.usersService.editUser(id, body);
   }
-  @Patch('/make-admin/:id')
+  @Patch('/admin/:id')
   @Permissions(Permission.USERS_SET_ADMIN)
-  makeAdmin(@Param('id') id: string) {
-    return this.usersService.makeAdmin(id);
+  setAdmin(@Param('id') id: string, @Body() body: IsAdminDTO) {
+    return this.usersService.setAdmin(id, body);
   }
   @Patch('/permissions/:id')
   @Permissions(Permission.USERS_SET_PERMISSIONS)
